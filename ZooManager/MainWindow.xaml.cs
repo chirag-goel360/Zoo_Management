@@ -58,5 +58,39 @@ namespace ZooManager
                 MessageBox.Show(e.ToString());
             }
         }
+
+        private void ShowAssociatedAnimals()
+        {
+            try
+            {
+                string query = "select * from Animal inner join ZooAnimal on Animal.Id = ZooAnimal.AnimalId" + " where ZooAnimal.ZooId = @ZooId";
+
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                //SqlDataAdapter can be imagined like an Interface to make Tables usable by CSharp Objects.
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
+
+                using (sqlDataAdapter)
+                {
+                    sqlCommand.Parameters.AddWithValue("@ZooId", listZoos.SelectedValue);
+                    DataTable animalTable = new DataTable();
+                    sqlDataAdapter.Fill(animalTable);
+                    //Which Information of the Table in Database should be Shown in our Listbox.
+                    listAssociatedAnimals.DisplayMemberPath = "Name";
+                    //Which Value of the Table in Database should be Delivered, When an Item from Listbox is Selected.
+                    listAssociatedAnimals.SelectedValuePath = "Id";
+                    //The Reference to the Data the Listbox should Populate.
+                    listAssociatedAnimals.ItemsSource = animalTable.DefaultView;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+
+        private void listZoos_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ShowAssociatedAnimals();
+        }
     }
 }
