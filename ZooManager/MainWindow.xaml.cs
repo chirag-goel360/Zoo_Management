@@ -31,6 +31,7 @@ namespace ZooManager
             string connection = ConfigurationManager.ConnectionStrings["ZooManager.Properties.Settings.ConnectionString"].ConnectionString;
             sqlConnection = new SqlConnection(connection);
             ShowZoos();
+            ShowAllAnimals();
         }
 
         private void ShowZoos()
@@ -51,6 +52,32 @@ namespace ZooManager
                     listZoos.SelectedValuePath = "Id";
                     //The Reference to the Data the Listbox should Populate.
                     listZoos.ItemsSource = zooTable.DefaultView;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+
+        private void ShowAllAnimals()
+        {
+            try
+            {
+                string query = "select * from Animal";
+                //SqlDataAdapter can be imagined like an Interface to make Tables usable by CSharp Objects.
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(query, sqlConnection);
+
+                using (sqlDataAdapter)
+                {
+                    DataTable animalTable = new DataTable();
+                    sqlDataAdapter.Fill(animalTable);
+                    //Which Information of the Table in Database should be Shown in our Listbox.
+                    listAllAnimals.DisplayMemberPath = "Name";
+                    //Which Value of the Table in Database should be Delivered, When an Item from Listbox is Selected.
+                    listAllAnimals.SelectedValuePath = "Id";
+                    //The Reference to the Data the Listbox should Populate.
+                    listAllAnimals.ItemsSource = animalTable.DefaultView;
                 }
             }
             catch (Exception e)
